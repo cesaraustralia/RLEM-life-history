@@ -34,6 +34,9 @@ dsum %>%
   geom_point() +
   geom_errorbar(aes(ymin=mean_val-se_val, ymax=mean_val+se_val, width=1)) + 
   geom_line() +
-  facet_wrap(~var, scales = "free_y")
+  facet_wrap(~var, scales = "free_y") + 
+  theme_bw() + 
+  xlab("Date") + 
+  ylab("Mean value")
 
 ggsave("plots/pasture_height_effect.png", width = 4, height=3, scale = 2)  

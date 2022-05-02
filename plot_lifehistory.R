@@ -64,6 +64,9 @@ dsum %>%
   pivot_longer(cols = c(nbodies, nbodiesdissected, total_eggs, mean_eggs_per_mite, se_eggs)) %>% 
   filter(name %in% c("nbodies", "mean_eggs_per_mite")) %>%
   filter(value < 400) %>% # !!! filter outlier for plotting
+  mutate(name = recode(name, 
+                       nbodies = "number of mites", 
+                       mean_eggs_per_mite = "mean eggs per mite")) %>% 
   mutate(Year = factor(year(DATE))) %>%
   ggplot(aes(Year, value, group=DATE)) +
   geom_violin() +
