@@ -8,14 +8,15 @@ names(d1)
 lifestagenames = c("LARVA", "PROTO", "DEUTO", "TRITO", "ADULT FEMALE", 
                    "ADULT MALE", "TOTAL ADULTS", "EGGS ON PASTURE")
 d1 %>% 
+  filter(BLOCK == 'C') %>% 
   mutate(DATE = as.Date(DATE)) %>%
-  mutate(DATE2 = as.Date(format(DATE, "1990-%m-%d"))) %>%
+  mutate(DATE = as.Date(format(DATE, "1990-%m-%d"))) %>%
   pivot_longer(cols = lifestagenames, names_to = "stage", values_to = "number") %>% 
   mutate(stage = factor(stage, levels = lifestagenames)) %>%
-  filter(stage != "TOTAL ADULTS") %>%
-  group_by(SITE, YEAR, DATE2, stage) %>% 
+  filter(!stage %in%  c("TOTAL ADULTS", "EGGS ON PASTURE")) %>%
+  group_by(SITE, YEAR, DATE, stage) %>% 
   summarise(mean_number = mean(number, na.rm=T)) %>% 
-  ggplot(aes(DATE2, mean_number, fill=stage)) +
+  ggplot(aes(DATE, mean_number, fill=stage)) +
   geom_area() + 
   scale_fill_viridis_d() +
   scale_x_date(date_labels = "%b", date_breaks = "1 month") +
@@ -25,8 +26,23 @@ d1 %>%
 ggsave("plots/lifehistorymite.png", width = 10, height=7)
 
 
+head(d1)
+d1 %>% 
+  mutate(d_adults = `TOTAL ADULTS` - lag(`TOTAL ADULTS`, 1)) %>%
+  mutate(lagtrito = lag(TRITO, 0)) %>%
+  drop_na(d_adults, lagtrito) %>%
+  lm(log(d_adults+1) ~ log(lagtrito+1), data=.) %>%
+  summary()
+
+  ggplot() + 
+  geom_point(aes(lagtrito, d_adults), alpha=0.3) + 
+    scale_x_log10() + 
+    scale_y_log10() + 
+    geom_abline(slope=1, intercept=0)
+View(d2)
+
 # mite eggs
-d2 = "data/lifehistory/egg development_ ngn_keys_1990_1992 20_Dec.xlsx" %>%
+d2 = "data/egg development_ ngn_keys_1990_1992 20_Dec.xlsx" %>%
   readxl::read_xlsx(sheet=1)
 d2$SITE %>% unique
 
