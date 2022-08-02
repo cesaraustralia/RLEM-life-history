@@ -2,6 +2,9 @@ library(tidyverse)
 library(lubridate)
 library(deSolve)
 
+# to do 
+# add physiological time
+
 # mite life history
 d1 <- "data/mite population_ ngn_keys_1990-1992 20_Dec.xlsx" %>%
   readxl::read_xlsx(sheet = 1)
