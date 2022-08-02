@@ -1,6 +1,5 @@
 library(tidyverse)
 library(lubridate)
-library(deSolve)
 
 # mite life history
 d1 = "data/mite population_ ngn_keys_1990-1992 20_Dec.xlsx" %>%
@@ -25,15 +24,15 @@ d = d1 %>%
     M4 = TRITO,
     M5 = `TOTAL ADULTS`
   ) %>%  
-  group_by(year, site, block) %>% 
+  group_by(year, site) %>% 
   mutate(group_id = cur_group_id()) %>% 
   ungroup %>% 
-  select(year, site, block, time, group_id, Ew, M1, M2, M3, M4, M5) %>%
-  group_by(year, site, block, time, group_id) %>% 
+  select(year, site, time, group_id, Ew, M1, M2, M3, M4, M5) %>%
+  group_by(year, site, time, group_id) %>% 
   summarise_all(.funs = function(x) mean(x, na.rm=TRUE)) %>%
   ungroup %>%
-  # filter(group_id == 1) %>%
-  filter(time>220) %>% #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  # filter(group_id == 1) %>% # !!!!!!!!!!!!!!!!!
+  # filter(time>220) %>% #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   mutate(Ew = ifelse(is.na(Ew), 0, Ew)) %>%
   identity()
 
@@ -170,7 +169,7 @@ sim %>%
 
 
 # simulation to predict data
-id=4
+id=2
 di = d %>% 
   filter(group_id == id) 
 dl = di %>%
@@ -199,5 +198,6 @@ ggplot() +
   geom_line(data=siml, aes(date0+time, value, color=name)) +
   geom_point(data=dl, aes(date0+time, value, color=name)) +
   facet_wrap(~name)
+
 
 
