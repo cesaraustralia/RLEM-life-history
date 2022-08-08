@@ -25,22 +25,6 @@ d1 %>%
   ylab("Abundance")
 ggsave("plots/lifehistorymite.png", width = 10, height=7)
 
-
-head(d1)
-d1 %>% 
-  mutate(d_adults = `TOTAL ADULTS` - lag(`TOTAL ADULTS`, 1)) %>%
-  mutate(lagtrito = lag(TRITO, 0)) %>%
-  drop_na(d_adults, lagtrito) %>%
-  lm(log(d_adults+1) ~ log(lagtrito+1), data=.) %>%
-  summary()
-
-  ggplot() + 
-  geom_point(aes(lagtrito, d_adults), alpha=0.3) + 
-    scale_x_log10() + 
-    scale_y_log10() + 
-    geom_abline(slope=1, intercept=0)
-View(d2)
-
 # mite eggs
 d2 = "data/egg development_ ngn_keys_1990_1992 20_Dec.xlsx" %>%
   readxl::read_xlsx(sheet=1)
